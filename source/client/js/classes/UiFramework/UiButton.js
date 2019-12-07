@@ -36,9 +36,12 @@ class UiButton extends Phaser.GameObjects.Container
 	createButton()
 	{
 		//Create the button, text and align
-		this.button = this.scene.add.image( 0, 0, this.key );
+		this.button = this.scene.add.sprite( 0, 0, this.key );
 		this.buttonText = this.scene.add.text( 0, 0, this.text, {fontSize: "26px", fill: "#fff"} );
 		Phaser.Display.Align.In.Center(this.buttonText, this.button);
+
+		//Setting the button interactive
+		this.button.setInteractive();
 
 		//Button click
 		this.button.on("pointerup", this.targetCallBack);
@@ -46,13 +49,11 @@ class UiButton extends Phaser.GameObjects.Container
 		//Button hover
 		this.button.on("pointerover", () => {
 			this.button.setTexture(this.hoverKey);
-			console.log("over");
 		});
 
 		//Button no-hover
 		this.button.on("pointerout", () => {
 			this.button.setTexture(this.key);
-			console.log("out");
 		});
 
 		//Add the button & buttonText into this container
