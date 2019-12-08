@@ -5,6 +5,12 @@ class UiScene extends Phaser.Scene
 		super("Ui");
 	}
 
+	init()
+	{
+		//Get a reference to "Game" scene
+		this.gameScene = this.scene.get("Game");
+	}
+
 	create()
 	{
 		this.setupUiElements();
@@ -22,6 +28,9 @@ class UiScene extends Phaser.Scene
 
 	setupEvents()
 	{
-
+		//Update Zen quantity displayed
+		this.gameScene.events.on( "updateZen", (playerZen) => {
+			this.zenText.setText(`Zen: ${playerZen}`);
+		});
 	}
 }
