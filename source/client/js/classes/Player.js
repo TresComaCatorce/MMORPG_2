@@ -37,6 +37,9 @@ class Player extends Phaser.Physics.Arcade.Image
 
 		//Add the player sprite to our existing scene
 		this.scene.add.existing(this);
+
+		//Camera follow the player
+		this.scene.cameras.main.startFollow(this);
 	}
 
 	update(cursors)

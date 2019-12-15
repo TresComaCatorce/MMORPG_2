@@ -12,23 +12,25 @@ class GameScene extends Phaser.Scene
 
 	create()
 	{
-		this.createPlayer();
-		this.createInputs();
+		this.createMap();
 		this.createChests();
-		this.createWalls();
-		this.createCollisions();
+		this.createInputs();
+		this.createGameManager();
 	}
 
 	update()
 	{
-		//Call "update" method from player
-		this.player.update( this.cursors );
+		if(this.player)
+		{
+			//Call "update" method from player
+			this.player.update( this.cursors );
+		}
 	}
 
-	createPlayer()
+	createPlayer( location )
 	{
 		//Create player instance
-		this.player = new Player( this, 100, 100, "characters", 0);	
+		this.player = new Player( this, location[0]*2, location[1]*2, "characters", 0);	
 	}
 
 	createInputs()
@@ -62,14 +64,29 @@ class GameScene extends Phaser.Scene
 		this.chests.add(chest);
 	}
 
-	createWalls()
-	{
-
-	}
-
 	createCollisions()
 	{
+		//Check for collisions between the player and the tiled blocked layer
+		this.physics.add.collider( this.player, this.map.blockedLayer );
+
 		//Overlap event between player and chest
 		this.physics.add.overlap( this.player, this.chests, this.player.collectChest.bind(this.player) );
+	}
+
+	createMap()
+	{
+		//Create the map
+		this.map = new Map( this, "map", "background", "background", "blocked" );
+	}
+
+	createGameManager()
+	{
+		this.events.on( "spawnPlayer", ( location ) => {
+			this.createPlayer(location);
+			this.createCollisions();
+		});
+
+		this.gameManager = new GameManager( this, this.map.map.objects );
+		this.gameManager.setup();
 	}
 }

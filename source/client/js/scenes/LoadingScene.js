@@ -10,12 +10,14 @@ class LoadingScene extends Phaser.Scene
 		this.loadImages();
 		this.loadSpritesheets();
 		this.loadAudios();
+		this.loadTileMap();
 	}
 	
 	loadImages()
 	{
 		this.load.image( "button_normal", "/assets/images/ui/blue_button01.png" );
 		this.load.image( "button_hover", "/assets/images/ui/blue_button02.png" );
+		this.load.image( "background", "/assets/level/background.png" );
 	}
 	
 	loadSpritesheets()
@@ -29,8 +31,13 @@ class LoadingScene extends Phaser.Scene
 		this.load.audio( "goldPickUpSound", ["/assets/audio/Pickup.wav"] );
 	}
 
+	loadTileMap()
+	{
+		this.load.tilemapTiledJSON( "map", "/assets/level/lvl_test.json" );
+	}
+
 	create()
 	{
-		this.scene.start("Title");
+		this.scene.start("Game");
 	}
 }

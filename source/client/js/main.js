@@ -8,8 +8,8 @@ var config =
 	[
 		LoadingScene,
 		TitleScene,
-		UiScene,
-		GameScene
+		GameScene,
+		UiScene
 	],
 	physics:
 	{
@@ -18,7 +18,9 @@ var config =
 		{
 			debug: true
 		}
-	}
+	},
+	pixelArt: true,
+	roundPixels: true
 }
 
 var game = new Phaser.Game(config);
