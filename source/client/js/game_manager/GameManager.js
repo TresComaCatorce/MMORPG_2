@@ -71,7 +71,7 @@ class GameManager
 			const config = {
 				spawnInterval: 3000,
 				limit: 5,
-				spawnerType: "CHEST",
+				spawnerType: SpawnerTypes.CHEST,
 				id: `chest-${key}`
 			};
 
@@ -92,14 +92,13 @@ class GameManager
 		this.scene.events.emit( "spawnPlayer", location );
 	}
 
-	addChest( id, chest )
+	addChest( chestId, chest )
 	{
-		this.chest[id] = chest;
-		console.log("CBF chest: ", chest);
+		this.chest[chestId] = chest;
 	}
 
-	deleteChest()
+	deleteChest( chestId )
 	{
-
+		delete this.chests[chestId]
 	}
 }

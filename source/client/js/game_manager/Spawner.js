@@ -29,8 +29,7 @@ class Spawner
 
 	spawnObject()
 	{
-		console.log( "CBF spawn object: ", this.objectType );
-		if( this.objectType === "CHEST" )
+		if( this.objectType === SpawnerTypes.CHEST )
 		{
 			this.spawnChest();
 		}
@@ -40,6 +39,7 @@ class Spawner
 	{
 		const location = this.pickRandomLocation();
 		const chest = new ChestModel( location[0], location[1], 10, this.id );
+		this.objectsCreated.push(chest);
 		this.addObject( chest.id, chest );
 	}
 
@@ -58,8 +58,12 @@ class Spawner
 		return location;
 	}
 
-	removeObject()
+	removeObject( id )
 	{
+		this.objectsCreated = this.objectsCreated.filter( (obj) => {
+			return obj.id !== id;
+		});
 
+		this.deleteObject(id);
 	}
 }
