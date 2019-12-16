@@ -5,7 +5,7 @@ class Spawner
 		this.id = config.id;
 		this.spawnInterval = config.spawnInterval;
 		this.limit = config.limit;
-		this.objectType = config.spawnerType;
+		this.spawnerType = config.spawnerType;
 
 		this.spawnLocations = spawnLocations;
 		
@@ -29,18 +29,39 @@ class Spawner
 
 	spawnObject()
 	{
-		if( this.objectType === SpawnerTypes.CHEST )
+		if( this.spawnerType === SpawnerTypes.CHEST )
 		{
 			this.spawnChest();
+		}
+		else if( this.spawnerType === SpawnerTypes.MONSTER )
+		{
+			this.spawnMonster();
 		}
 	}
 
 	spawnChest()
 	{
 		const location = this.pickRandomLocation();
-		const chest = new ChestModel( location[0], location[1], 10, this.id );
+		const chest = new ChestModel( location[0], location[1], randomNumber(5,100), this.id );
 		this.objectsCreated.push(chest);
 		this.addObject( chest.id, chest );
+	}
+
+	spawnMonster()
+	{
+		const location = this.pickRandomLocation();
+		const monster = new MonsterModel
+		(
+			location[0],
+			location[1],
+			randomNumber(5, 100),
+			this.id,
+			randomNumber(0, 20),
+			randomNumber(3, 5),
+			1
+		);
+		this.objectsCreated.push(monster);
+		this.addObject( monster.id, monster );
 	}
 
 	pickRandomLocation()
@@ -60,7 +81,7 @@ class Spawner
 
 	removeObject( id )
 	{
-		this.objectsCreated = this.objectsCreated.filter( (obj) => {
+		this.objectsCreated = this.objectsCreated.filter( obj => {
 			return obj.id !== id;
 		});
 
