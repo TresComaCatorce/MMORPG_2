@@ -22,6 +22,32 @@ class Monster extends Phaser.Physics.Arcade.Image
 
 		//Add the monster sprite to our existing scene
 		this.scene.add.existing(this);
+
+		//Update the origin
+		this.setOrigin(0);
+
+		this.createHealtBar();
+	}
+
+	createHealtBar()
+	{
+		this.healthBar = this.scene.add.graphics();
+		this.updateHealthBar();
+	}
+
+	updateHealth( health )
+	{
+		this.health = health;
+		this.updateHealthBar();
+	}
+
+	updateHealthBar()
+	{
+		this.healthBar.clear();
+		this.healthBar.fillStyle( 0xffffff, 1 );
+		this.healthBar.fillRect( this.x, this.y - 8, 64, 5 );
+		this.healthBar.fillGradientStyle( 0xff0000, 0xffffff, 4 );
+		this.healthBar.fillRect( this.x, this.y - 8, 64*this.health/this.maxHealth, 5 );
 	}
 
 	makeActive()
@@ -29,6 +55,7 @@ class Monster extends Phaser.Physics.Arcade.Image
 		this.setActive(true);
 		this.setVisible(true);
 		this.body.checkCollision.none = false;
+		this.updateHealthBar();
 	}
 
 	makeInactive()
@@ -36,5 +63,6 @@ class Monster extends Phaser.Physics.Arcade.Image
 		this.setActive(false);
 		this.setVisible(false);
 		this.body.checkCollision.none = true;
+		this.healthBar.clear();
 	}
 }

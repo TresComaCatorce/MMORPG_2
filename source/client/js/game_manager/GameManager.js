@@ -8,6 +8,7 @@ class GameManager
 		this.spawners = {};
 		this.chests = {};
 		this.monsters = {};
+		this.players = {};
 
 		this.playerLocations = [];
 		this.chestLocations = {};
@@ -62,19 +63,50 @@ class GameManager
 
 	setupEventListeners()
 	{
-		this.scene.events.on( "pickUpChest", chestId => {
+		this.scene.events.on( "pickUpChest", ( chestId, playerId ) => {
 			//Update the spawner
 			if(this.chests[chestId])
 			{
+				const { gold } = this.chests[chestId];
+
+				//Updating the player gold
+				this.players[playerId].updateGold(gold);
+				this.scene.events.emit( "updateGold", this.players[playerId].gold );
+
 				this.spawners[ this.chests[chestId].spawnerId ].removeObject(chestId);
+				this.scene.events.emit( "chestRemove", chestId );
 			}
 		});
 
-		this.scene.events.on( "destroyEnemy", monsterId => {
+		this.scene.events.on( "monsterAttack", ( monsterId, playerId ) => {
 			//Update the spawner
 			if(this.monsters[monsterId])
 			{
-				this.spawners[ this.monsters[monsterId].spawnerId ].removeObject(monsterId);
+				const { gold, attack } = this.monsters[monsterId];
+
+				//Subtract health from monster model
+				this.monsters[monsterId].loseHealth();
+
+				//Check the monster health
+				if( this.monsters[monsterId].health <= 0)
+				{
+					//Updating the player gold
+					this.players[playerId].updateGold(gold);
+					this.scene.events.emit( "updateGold", this.players[playerId].gold );
+
+					//Removing the monster
+					this.spawners[ this.monsters[monsterId].spawnerId ].removeObject(monsterId);
+					this.scene.events.emit( "monsterDestroy", monsterId );
+				}
+				else
+				{
+					//Update the players health
+					this.players[playerId].updateHealth(-attack);
+					this.scene.events.emit( "updatePlayerHealth", playerId, this.players[playerId].health );
+
+					//Update the monster health
+					this.scene.events.emit( "updateMonsterHealth", monsterId, this.monsters[monsterId].health );
+				}
 			}
 		});
 	}
@@ -125,8 +157,9 @@ class GameManager
 
 	spawnPlayer()
 	{
-		const location = this.playerLocations[Math.floor(Math.random()*this.playerLocations.length)];
-		this.scene.events.emit( "spawnPlayer", location );
+		const player = new PlayerModel( this.playerLocations );
+		this.players[player.id] = player;
+		this.scene.events.emit( "spawnPlayer", player );
 	}
 
 	addChest( chestId, chest )

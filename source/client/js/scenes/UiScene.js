@@ -20,7 +20,7 @@ class UiScene extends Phaser.Scene
 	setupUiElements()
 	{
 		//Create "gold" quantity display
-		this.goldText = this.add.text( this.scale.width*.05, this.scale.height*.02, "gold: 0", {fontSize: "16px", fill: "#fff"} );
+		this.goldText = this.add.text( this.scale.width*.05, this.scale.height*.02, "Gold: 0", {fontSize: "16px", fill: "#fff"} );
 
 		//Create "gold" icon
 		this.goldIcon = this.add.image( this.scale.width*.025, this.scale.height*.03, "items", 3 );

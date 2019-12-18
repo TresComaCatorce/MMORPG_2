@@ -28,10 +28,20 @@ class GameScene extends Phaser.Scene
 		}
 	}
 
-	createPlayer( location )
+	createPlayer( playerObj )
 	{
 		//Create player instance
-		this.player = new PlayerContainer( this, location[0]*2, location[1]*2, "characters", 0);	
+		this.player = new PlayerContainer
+		(
+			this,
+			playerObj.x*2,
+			playerObj.y*2,
+			"characters",
+			0,
+			playerObj.health,
+			playerObj.maxHealth,
+			playerObj.id
+		);	
 	}
 
 	createInputs()
@@ -84,7 +94,6 @@ class GameScene extends Phaser.Scene
 
 	spawnMonster( monsterObj )
 	{
-		console.log("Monster: ", monsterObj);
 		let monster = this.monsters.getFirstDead();
 
 		if(!monster)
@@ -124,14 +133,17 @@ class GameScene extends Phaser.Scene
 		//Overlap event between monster group and the tiled block layer
 		this.physics.add.collider( this.monsters, this.map.blockedLayer );
 
-		//Overlap event between player and monster 
-		this.physics.add.overlap( this.player, this.monsters, this.enemyOverlaped, null, this );
+		//Overlap event between player weapon and monster 
+		this.physics.add.overlap( this.player.weapon, this.monsters, this.enemyOverlaped, null, this );
 	}
 
-	enemyOverlaped( playerObj, enemyObj )
+	enemyOverlaped( weapon, enemyObj )
 	{
-		enemyObj.makeInactive();
-		this.events.emit( "destroyEnemy", enemyObj.id );
+		if( this.player.playerAttacking && !this.player.swordHit )
+		{
+			this.player.swordHit = true;
+			this.events.emit( "monsterAttack", enemyObj.id, this.player.id );
+		}
 	}
 
 	collectChest( player, chest )
@@ -139,16 +151,7 @@ class GameScene extends Phaser.Scene
 		//Play sound
 		this.goldPickUpSound.play();
 
-		//Update gold quantity
-		player.gold += chest.coins;
-
-		//Update gold quantity in UI
-		this.events.emit( "updateGold", player.gold );
-		
-		//Inactive the chest
-		chest.makeInactive();
-
-		this.events.emit( "pickUpChest", chest.id );
+		this.events.emit( "pickUpChest", chest.id, player.id );
 	}
 
 	createMap()
@@ -159,8 +162,8 @@ class GameScene extends Phaser.Scene
 
 	createGameManager()
 	{
-		this.events.on( "spawnPlayer",  location => {
-			this.createPlayer(location);
+		this.events.on( "spawnPlayer",  playerObj => {
+			this.createPlayer(playerObj);
 			this.createCollisions();
 		});
 
@@ -170,6 +173,37 @@ class GameScene extends Phaser.Scene
 		
 		this.events.on( "monsterSpawned",  monster => {
 			this.spawnMonster(monster);
+		});
+
+		this.events.on( "monsterDestroy",  monsterId => {
+			this.monsters.getChildren().forEach( (monster) => {
+				if( monster.id === monsterId )
+				{
+					monster.makeInactive();
+				}
+			});
+		});
+
+		this.events.on( "chestRemove",  chestId => {
+			this.chests.getChildren().forEach( (chest) => {
+				if( chest.id === chestId )
+				{
+					chest.makeInactive();
+				}
+			});
+		});
+
+		this.events.on( "updateMonsterHealth",  ( monsterId, health ) => {
+			this.monsters.getChildren().forEach( (monster) => {
+				if( monster.id === monsterId )
+				{
+					monster.updateHealth(health);
+				}
+			});
+		});
+
+		this.events.on( "updatePlayerHealth",  ( playerId, health ) => {
+			this.player.updateHealth(health);
 		});
 
 		this.gameManager = new GameManager( this, this.map.map.objects );
