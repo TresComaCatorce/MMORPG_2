@@ -1,1 +1,1 @@
-http-server . --stack-size=16000
+http-server . --stack-size=32000

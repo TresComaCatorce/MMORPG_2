@@ -63,6 +63,7 @@ class GameScene extends Phaser.Scene
 
 		//Create a monster group
 		this.monsters = this.physics.add.group();
+		this.monsters.runChildUpdate = true;
 	}
 
 	spawnChest( chestObj )
@@ -101,8 +102,8 @@ class GameScene extends Phaser.Scene
 			monster = new Monster
 			(
 				this,
-				monsterObj.x*2,
-				monsterObj.y*2,
+				monsterObj.x,
+				monsterObj.y,
 				"monsters",
 				monsterObj.frame,
 				monsterObj.id,
@@ -117,7 +118,7 @@ class GameScene extends Phaser.Scene
 			monster.health = monsterObj.health;
 			monster.maxHealth = monsterObj.maxHealth;
 			monster.setTexture( "monsters", monsterObj.frame );
-			monster.setPosition( monsterObj.x*2, monsterObj.y*2 );
+			monster.setPosition( monsterObj.x, monsterObj.y );
 			monster.makeActive();
 		}
 	}
@@ -193,12 +194,28 @@ class GameScene extends Phaser.Scene
 			});
 		});
 
-		this.events.on( "updateMonsterHealth",  ( monsterId, health ) => {
-			this.monsters.getChildren().forEach( (monster) => {
+		this.events.on( "updateMonsterHealth",  ( monsterId, health ) =>
+		{
+			this.monsters.getChildren().forEach( (monster) =>
+			{
 				if( monster.id === monsterId )
 				{
 					monster.updateHealth(health);
 				}
+			});
+		});
+		
+		this.events.on( "monsterMovement",  ( monsters ) =>
+		{
+			this.monsters.getChildren().forEach( (monster) =>
+			{
+				Object.keys(monsters).forEach( (monsterId) =>
+				{
+					if( monster.id === monsterId )
+					{
+						this.physics.moveToObject( monster, monsters[monsterId], 40 );
+					}
+				});
 			});
 		});
 

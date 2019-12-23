@@ -1,6 +1,6 @@
 class Spawner
 {
-	constructor( config, spawnLocations, addObject, deleteObject )
+	constructor( config, spawnLocations, addObject, deleteObject, moveObjects )
 	{
 		this.id = config.id;
 		this.spawnInterval = config.spawnInterval;
@@ -11,6 +11,7 @@ class Spawner
 		
 		this.addObject = addObject;
 		this.deleteObject = deleteObject;
+		this.moveObjects = moveObjects;
 
 		this.objectsCreated = [];
 
@@ -25,6 +26,11 @@ class Spawner
 				this.spawnObject();
 			}
 		}, this.spawnInterval);
+
+		if( this.spawnerType === SpawnerTypes.MONSTER )
+		{
+			this.moveMonsters();
+		}
 	}
 
 	spawnObject()
@@ -62,6 +68,17 @@ class Spawner
 		);
 		this.objectsCreated.push(monster);
 		this.addObject( monster.id, monster );
+	}
+
+	moveMonsters()
+	{
+		this.moveMonstersInterval = setInterval( () => {
+			this.objectsCreated.forEach( (monster) => {
+				monster.move();
+			} );
+
+			this.moveObjects();
+		}, 1000);
 	}
 
 	pickRandomLocation()
