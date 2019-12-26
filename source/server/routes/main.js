@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 
 
 router.get( "/", (request, response) =>
@@ -16,30 +17,34 @@ router.get( "/status", (request, response) =>
 
 
 
-router.post( "/signup", (request, response, next) =>
+router.post( "/signup", passport.authenticate("signup", {"session": false}), async (request, response, next) =>
 {
-	if( !request.body )
-	{
-		response.status(400).json( {"message": "Invalid body", "status": 400} );
-	}
-	else
-	{
-		response.status(200).json( {"message": "signup", "status": 200} );
-	}
+	response.status(200).json( {"message": "Signup successful", "status": 200} );
 });
 
 
 
-router.post( "/login", (request, response) =>
+router.post( "/login", async (request, response, next) =>
 {
-	if( !request.body )
-	{
-		response.status(400).json( {"message": "Invalid body", "status": 400} );
-	}
-	else
-	{
-		response.status(200).json( {"message": "login", "status": 200} );
-	}
+	passport.authenticate( "login", async (error, user) => {
+		try
+		{
+			if( error ) return next(error);
+
+			if( !user ) return next( new Error("Email and password are required") );
+
+			request.login( user, {"session":false}, (err) =>
+			{
+				if(err) return next(err);
+				return response.status(200).json( {user, "status": 200} );
+			} );
+		}
+		catch (err)
+		{
+			console.log("/login |catch: ", err);
+			return next(err);
+		}
+	} )(request, response, next);
 });
 
 
