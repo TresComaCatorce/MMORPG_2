@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
+
+const tokenList = {};
 
 
 router.get( "/", (request, response) =>
@@ -36,7 +39,31 @@ router.post( "/login", async (request, response, next) =>
 			request.login( user, {"session":false}, (err) =>
 			{
 				if(err) return next(err);
-				return response.status(200).json( {user, "status": 200} );
+
+				//Create the jwt
+				const body = {
+					_id: user._id,
+					email: user.email,
+					name: user.username
+				};
+				const token = jwt.sign( {user: body}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_SECRET_EXPIRES}  );
+				const refreshToken = jwt.sign( {user: body}, process.env.JWT_REFRESH_SECRET, {expiresIn: process.env.JWT_REFRESH_SECRET_EXPIRES}  );
+
+				//Store tokens in cookies
+				response.cookie( "jwt", token );
+				response.cookie( "refreshJwt", token );
+
+				//Store tokens in memory (TODO store in DB)
+				console.log("CBF user: ", user);
+				tokenList[refreshToken] = {
+					token,
+					refreshToken,
+					email: user.email,
+					_id: user._id,
+					name: user.username
+				};
+
+				return response.status(200).json( { token, refreshToken, status: 200} );
 			} );
 		}
 		catch (err)
