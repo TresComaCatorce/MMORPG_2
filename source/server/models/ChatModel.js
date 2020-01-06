@@ -5,8 +5,7 @@ const { Schema } = mongoose;
 const ChatSchema = new Schema({
 	email: {
 		type: String,
-		required: true,
-		unique: true
+		required: true
 	},
 	message: {
 		type: String,

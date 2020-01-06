@@ -28,3 +28,6 @@ It is necessary to create the following environment variables:
 * **JWT_SECRET_EXPIRES**: Json Web Token expiration time.
 * **JWT_REFRESH_SECRET**: Secret String used to generate the refresh Json Web Token.
 * **JWT_REFRESH_SECRET_EXPIRES**: Refresh Json Web Token expiration time.
+* **EMAIL_ADDRESS**: Email address used by the server to send the emails.
+* **EMAIL_PASSWORD**: Password of the email address used by the server to send the emails.
+* **EMAIL_PROVIDER**: Provider of the email address used by the server to send the emails.

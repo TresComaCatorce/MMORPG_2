@@ -13,16 +13,16 @@ router.get( "/", (request, response) =>
 
 
 
-router.get( "/status", (request, response) =>
+router.get( "/status", passport.authenticate("jwt", {"session": false}), async (request, response) =>
 {
-	response.status(200).json({"message": "All OK", "status": 200});
+	response.status(200).json( { message: "All OK", status: 200 } );
 });
 
 
 
 router.post( "/signup", passport.authenticate("signup", {"session": false}), async (request, response, next) =>
 {
-	response.status(200).json( {"message": "Signup successful", "status": 200} );
+	response.status(200).json( { message: "Signup successful", status: 200 } );
 });
 
 
@@ -36,35 +36,38 @@ router.post( "/login", async (request, response, next) =>
 
 			if( !user ) return next( new Error("Email and password are required") );
 
-			request.login( user, {"session":false}, (err) =>
-			{
-				if(err) return next(err);
+			request.login(
+				user,
+				{ session: false },
+				(err) =>
+				{
+					if(err) return next(err);
 
-				//Create the jwt
-				const body = {
-					_id: user._id,
-					email: user.email,
-					name: user.username
-				};
-				const token = jwt.sign( {user: body}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_SECRET_EXPIRES}  );
-				const refreshToken = jwt.sign( {user: body}, process.env.JWT_REFRESH_SECRET, {expiresIn: process.env.JWT_REFRESH_SECRET_EXPIRES}  );
+					//Create the jwt
+					const body = {
+						_id: user._id,
+						email: user.email,
+						username: user.username
+					};
+					const token = jwt.sign( {user: body}, process.env.JWT_SECRET, {expiresIn: 300}  );
+					const refreshToken = jwt.sign( {user: body}, process.env.JWT_REFRESH_SECRET, {expiresIn: 86400}  );
 
-				//Store tokens in cookies
-				response.cookie( "jwt", token );
-				response.cookie( "refreshJwt", token );
+					//Store tokens in cookies
+					response.cookie( "jwt", token );
+					response.cookie( "refreshJwt", token );
 
-				//Store tokens in memory (TODO store in DB)
-				console.log("CBF user: ", user);
-				tokenList[refreshToken] = {
-					token,
-					refreshToken,
-					email: user.email,
-					_id: user._id,
-					name: user.username
-				};
+					//Store tokens in memory (TODO store in DB)
+					tokenList[refreshToken] = {
+						token,
+						refreshToken,
+						email: user.email,
+						_id: user._id,
+						username: user.username
+					};
 
-				return response.status(200).json( { token, refreshToken, status: 200} );
-			} );
+					return response.status(200).json( { token, refreshToken, status: 200} );
+				}
+			);
 		}
 		catch (err)
 		{
@@ -78,13 +81,21 @@ router.post( "/login", async (request, response, next) =>
 
 router.post( "/logout", (request, response) =>
 {
-	if( !request.body )
+	if( request.cookies && ( request.cookies.jwt || request.cookies.refreshJwt) )
 	{
-		response.status(400).json( {"message": "Invalid body", "status": 400} );
+		const refreshToken = request.cookies.refreshJwt;
+
+		//Delete token from memory (TODO delete from DB)
+		if( refreshToken in tokenList ) delete tokenList[refreshToken];
+
+		response.clearCookie( "jwt" );
+		response.clearCookie( "refreshJwt" );
+
+		response.status(200).json( { message: "Logged out", status: 200 } );
 	}
 	else
 	{
-		response.status(200).json( {"message": "logout", "status": 200} );
+		response.status(400).json( { message: "Not logged in", status: 200 } );
 	}
 });
 
@@ -94,12 +105,37 @@ router.post( "/token", (request, response) =>
 {
 	if( !request.body || !request.body.refreshToken )
 	{
-		response.status(400).json( {"message": "Invalid body", "status": 400} );
+		response.status(400).json( { message: "Invalid body", status: 400 } );
 	}
 	else
 	{
 		const { refreshToken } = request.body;
-		response.status(200).json( {"message": `Refresh token requested for token: ${refreshToken}`, "status": 200} );
+
+		if( refreshToken in tokenList )
+		{
+			const body = {
+				email: tokenList[refreshToken].email,
+				_id: tokenList[refreshToken]._id,
+				username: tokenList[refreshToken].username
+			};
+
+			const token = jwt.sign
+			(
+				{ user: body },
+				process.env.JWT_SECRET,
+				{ expiresIn: 300 }
+			);
+
+			// Update JWT
+			response.cookie( "jwt", token );
+			tokenList[refreshToken].token = token;
+
+			response.status(200).json( { token, status: 200 } );
+		}
+		else
+		{
+			response.status(401).json( { message: "Unauthorized", status: 401 } );
+		}
 	}
 });
 

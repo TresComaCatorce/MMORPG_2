@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const passport = require("passport");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -8,6 +9,7 @@ const mongoose = require("mongoose");
 
 const routes = require("./routes/main");
 const passwordRoutes = require("./routes/password");
+const secureRoutes = require("./routes/secure");
 
 
 
@@ -33,6 +35,8 @@ mongoose.connection.on( "error", (err) =>
 })
 
 
+mongoose.set( "useFindAndModify", false );
+
 
 const app = express();
 const port =  process.env.SERVER_PORT || 3000;
@@ -53,6 +57,7 @@ require("./auth/auth");
 //Setup routes
 app.use( "/", routes );
 app.use( "/", passwordRoutes );
+app.use( "/", passport.authenticate("jwt", {"session": false}), secureRoutes );
 
 
 
