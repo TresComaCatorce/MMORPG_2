@@ -53,6 +53,15 @@ app.use( cors( {"credentials": true, "origin":  cors_origin} ) )
 //Require passport auth
 require("./auth/auth");
 
+//Configure static folder to express
+app.use( express.static( __dirname + "/public" ) );
+
+//Set index.html for root path requests
+app.get( "/", ( request, response ) =>
+{
+	response.send( __dirname + "/index.html" );
+});
+
 
 //Setup routes
 app.use( "/", routes );

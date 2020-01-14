@@ -6,10 +6,10 @@ const jwt = require("jsonwebtoken");
 const tokenList = {};
 
 
-router.get( "/", (request, response) =>
-{
-	response.send("Hello world from NodeJS API");
-});
+// router.get( "/", (request, response) =>
+// {
+// 	response.send("Hello world from NodeJS API");
+// });
 
 
 
