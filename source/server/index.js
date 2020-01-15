@@ -1,11 +1,11 @@
 require("dotenv").config();
 
-const passport = require("passport");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const passport = require("passport");
 
 const routes = require("./routes/main");
 const passwordRoutes = require("./routes/password");
@@ -52,6 +52,10 @@ app.use( cors( {"credentials": true, "origin":  cors_origin} ) )
 
 //Require passport auth
 require("./auth/auth");
+
+app.get( "/game.html", passport.authenticate( "jwt", {session: false} ), ( request, response ) => {
+	response.status(200).json( request.user );
+});
 
 //Configure static folder to express
 app.use( express.static( __dirname + "/public" ) );

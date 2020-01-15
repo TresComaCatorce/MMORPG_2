@@ -63,7 +63,7 @@ router.post( "/forgot-password", async (request, response) =>
 		subject: "Zenva MMORPG Password Reset",
 		context: {
 			name: "KriZ",
-			url: `http://localhost:${process.env.PORT || 3000}?token=${token}`
+			url: `http://localhost:${process.env.PORT || 3000}/reset-password.html?token=${token}`
 		}
 	};
 	await smtpTransport.sendMail( emailOptions );
