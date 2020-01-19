@@ -78,26 +78,11 @@ router.post( "/login", async (request, response, next) =>
 });
 
 
+router.route( "/logout" )
+	.get( processLogoutRequest )
+	.post( processLogoutRequest );
 
-router.post( "/logout", (request, response) =>
-{
-	if( request.cookies && ( request.cookies.jwt || request.cookies.refreshJwt) )
-	{
-		const refreshToken = request.cookies.refreshJwt;
 
-		//Delete token from memory (TODO delete from DB)
-		if( refreshToken in tokenList ) delete tokenList[refreshToken];
-
-		response.clearCookie( "jwt" );
-		response.clearCookie( "refreshJwt" );
-
-		response.status(200).json( { message: "Logged out", status: 200 } );
-	}
-	else
-	{
-		response.status(400).json( { message: "Not logged in", status: 200 } );
-	}
-});
 
 
 
@@ -138,6 +123,34 @@ router.post( "/token", (request, response) =>
 		}
 	}
 });
+
+
+function processLogoutRequest( request, response )
+{
+	if( request.cookies && ( request.cookies.jwt || request.cookies.refreshJwt) )
+	{
+		const refreshToken = request.cookies.refreshJwt;
+
+		//Delete token from memory (TODO delete from DB)
+		if( refreshToken in tokenList ) delete tokenList[refreshToken];
+
+		response.clearCookie( "jwt" );
+		response.clearCookie( "refreshJwt" );
+
+		if( request.method === "POST" )
+		{
+			response.status(200).json( { message: "Logged out", status: 200 } );
+		}
+		else if( request.method === "GET" )
+		{
+			response.sendFile( "logout.html", {root: "./public"} );
+		}
+	}
+	else
+	{
+		response.status(400).json( { message: "Not logged in", status: 200 } );
+	}
+}
 
 
 module.exports = router;
