@@ -60,7 +60,7 @@ router.post( "/forgot-password", async (request, response) =>
 		to: userEmail,
 		from: emailAddress,
 		template: "forgot-password",
-		subject: "Zenva MMORPG Password Reset",
+		subject: "Ragtum MMORPG Password Reset",
 		context: {
 			name: "KriZ",
 			url: `http://localhost:${process.env.SERVER_PORT || 3000}/reset-password.html?token=${token}`
@@ -106,7 +106,7 @@ router.post( "/reset-password", async (request, response) =>
 		to: userEmail,
 		from: emailAddress,
 		template: "reset-password",
-		subject: "Zenva MMORPG Password Reset Confirmation",
+		subject: "Ragtum MMORPG Password Reset Confirmation",
 		context: {
 			name: user.username
 		}
