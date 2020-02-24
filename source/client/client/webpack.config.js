@@ -3,8 +3,19 @@ const webpack = require("webpack");
 
 module.exports = {
 	entry: "./src/index.js",
+	output:
+	{
+		path: path.resolve(__dirname, "build"),
+		publicPath: "/build/",
+		filename: "ragtum.bundle.js"
+	},
 	module: {
 		rules: [
+			{
+				test: /\.js$/,
+				use: { loader: "babel-loader" },
+				exclude: /node_modules/
+			},
 			{
 				test: [/\.vert$/, /\.frag$/],
 				use: "raw-loader"
