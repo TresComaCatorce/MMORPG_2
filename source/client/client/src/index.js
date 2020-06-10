@@ -1,25 +1,30 @@
-import "phaser";
+import * as Phaser from 'phaser';
+import scenes from './scenes/scenes';
 
-const phaserConfig =
-{
+const phaserConfig = {
 	type: Phaser.AUTO,
 	width: 800,
 	height: 600,
-	scene:
+	scene: scenes,
+	physics:
 	{
-		preload,
-		create
+		default: 'arcade',
+		arcade:
+		{
+			debug: false,
+		},
+	},
+	pixelArt: true,
+	roundPixels: true,
+};
+
+class Game extends Phaser.Game {
+	constructor() {
+		super(phaserConfig);
+		this.scene.start('Loading');
 	}
 }
 
-const game = new Phaser.Game( phaserConfig );
-
-function preload()
-{
-	console.log("CBF preload");
-}
-
-function create()
-{
-	this.add.text( 0, 0, "CBF Hello world" );
-}
+window.onload = () => {
+	window.game = new Game();
+};

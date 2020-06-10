@@ -5,7 +5,8 @@
 	"main": "src/index.js",
 	"scripts": {
 		"build": "npx webpack --mode production",
-		"start": "npm run build && npx webpack-dev-server --port=8000 --mode development"
+		"start": "npm run build && npx webpack-dev-server --port=8000 --mode development",
+		"lint": "npx eslint src --fix"
 	},
 	"author": "Cristian Ferrero",
 	"license": "ISC",
@@ -13,6 +14,9 @@
 		"@babel/core": "^7.8.4",
 		"@babel/preset-env": "^7.8.4",
 		"babel-loader": "^8.0.6",
+		"eslint": "^6.8.0",
+		"eslint-config-airbnb-base": "^14.0.0",
+		"eslint-plugin-import": "^2.20.1",
 		"raw-loader": "^4.0.0",
 		"webpack": "^4.41.5",
 		"webpack-cli": "^3.3.11",
