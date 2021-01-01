@@ -1,0 +1,1 @@
+http-server ../source/client/client --stack-size=32000

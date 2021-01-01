@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import UiButton from '../classes/UiButton';
+import UiButton from '../classes/UI/UiButton';
 
 export default class TitleScene extends Phaser.Scene {
 	constructor() {
