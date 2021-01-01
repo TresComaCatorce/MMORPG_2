@@ -1,5 +1,6 @@
 # Custom ignores
 database/
+source/client/build
 .env
 
 # Logs
