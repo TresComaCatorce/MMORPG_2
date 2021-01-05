@@ -19,9 +19,7 @@ export default class LoadingScene extends Phaser.Scene {
 	}
 
 	loadSpritesheets() {
-		this.load.spritesheet('items', '/assets/images/items.png', { frameWidth: 32, frameHeight: 32 });
-		this.load.spritesheet('characters', '/assets/images/characters.png', { frameWidth: 32, frameHeight: 32 });
-		this.load.spritesheet('monsters', '/assets/images/monsters.png', { frameWidth: 32, frameHeight: 32 });
+		this.load.spritesheet('characterUnarmored', '/assets/images/character_unarmored.png', { frameWidth: 256, frameHeight: 256 });
 	}
 
 	loadAudios() {

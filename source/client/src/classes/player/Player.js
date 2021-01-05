@@ -15,9 +15,9 @@ import * as Phaser from 'phaser';
 
 export default class Player extends Phaser.Physics.Arcade.Image
 {
-	constructor( scene, x, y, key, frame )
+	constructor( scene, x, y, key )
 	{
-		super( scene, x, y, key, frame );
+		super( scene, x, y, key );
 		this.scene = scene;
 
 		//Enable physics

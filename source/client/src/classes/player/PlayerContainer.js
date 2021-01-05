@@ -18,7 +18,7 @@ import { Directions } from '../gameManager/utils';
 
 export default class PlayerContainer extends Phaser.GameObjects.Container
 {
-	constructor( scene, x, y, key, frame, health, maxHealth, id )
+	constructor( scene, x, y, key, health, maxHealth, id )
 	{
 		super( scene, x, y );
 		this.scene = scene;
@@ -48,7 +48,7 @@ export default class PlayerContainer extends Phaser.GameObjects.Container
 		this.scene.cameras.main.startFollow(this);
 
 		//Create te player
-		this.player = new Player( this.scene, 0, 0, key, frame );
+		this.player = new Player( this.scene, 0, 0, key );
 		this.add( this.player );
 
 		//Create the weapon game object and andd to container
