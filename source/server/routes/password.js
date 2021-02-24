@@ -37,6 +37,7 @@ smtpTransport.use( "compile", hbs(handleBarsOptions) );
 
 
 
+// Active "less secure app" in https://myaccount.google.com/u/2/lesssecureapps
 router.post( "/forgot-password", async (request, response) =>
 {
 	const userEmail = request.body.email;
